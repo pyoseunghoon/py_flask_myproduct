@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+  <!-- Webpage Title -->
+  <title>PYO's page</title>
+
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <link href="https://fonts.googleapis.com/css?family=Gaegu|Nanum+Gothic&display=swap" rel="stylesheet">
+
+  <!-- JS -->		
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+
+  <style>
+    .myimage{
+      width: 500px;
+      margin: 20px auto 20px auto;
+    }
+    .body > div {
+      font-family: 'Nanum Gothic', sans-serif;
+      font-family: 'Gaegu', cursive;
+    }
+    .product > h2 > span {
+      font-size: 10px;
+    }
+    .product > div > span> input {
+      border-radius: 10px;
+    }
+    .myclass {
+      width: 300px;
+    }
+    .body {
+      width: 600px;
+      margin: auto;
+    }
+    .order_button{
+      width: 100px;
+      margin: 10px auto 0px auto;
+    }
+  </style>
+
+  <script>
+    //핸드폰 정규식
+    function isCelluar(asValue){
+      var regExp = /^01(?:0|1|[6-9])-(?:\d{3}|\d{4})-\d{4}$/;
+      return regExp.test(asValue)
+    } 
+
+    //이메일 정규식
+    function isEmail(asValue){
+      var regExp = /^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i;
+      return regExp.test(asValue)
+    }
+
+    //주문 금액 함수
+    function print_price(num){
+      return num * 1000000
+    }
+
+   //  function my_order_list(){
+   //   let c_name = $('#name').val()
+   //   let c_amount = $('#inlineFormCustomSelect').val()
+   //   let c_address = $('#address').val()
+   //   let c_phone_number = $('#phone_number').val()
+   //   // let user_order = [c_name,c_amount,c_address,c_phone_number]
+   //   console.log(c_name, c_amount, c_address, c_phone_number)
+
+   //   let dumy ='<tr>\
+   //   <th scope="row">'+num+'</th>\
+   //   <td>'+c_name+'</td>\
+   //   <td>'+c_amount+'</td>\
+   //   <td>'+c_address+'</td>\
+   //   <td>'+c_phone_number+'</td>\
+   //   </tr>'
+   //   $('#order_list').append(dumy)
+   //   num++
+   // }
+
+   function order(){
+    let c_name = $('#name').val()
+    console.log(c_name)
+    let c_amount = $('#inlineFormCustomSelect').val()
+    console.log(c_amount)
+    console.log(typeof(c_amount))
+    let c_address = $('#address').val()
+    console.log(c_address)
+    let c_phone_number = $('#phone_number').val()
+    console.log(c_phone_number)
+
+
+
+    if(c_name == ''){
+      alert('주문자 성함을 입력해주세요')
+      $('#name').focus()
+    }
+    else if(c_amount == 'not_order'){
+      alert('수량을 입력해주세요')
+      $('#inlineFormCustomSelect').focus()
+    }
+    else if(c_address == ''){
+      alert('주소를 입력해주세요!')
+      $('#address').focus()
+    }
+    else if(!isEmail(c_address)){
+      alert('이메일 형식이 틀립니다. ex. example.naver.com')
+      $('#address').focus()
+    }
+    else if(c_phone_number == '') {
+      alert('전화번호를 입력해주세요')
+      $('#phone_number').focus()
+    }
+    else if(!isCelluar(c_phone_number)){
+      alert('휴대폰 번호 형식이 틀립니다. ex. 010-0000-0000')
+      $('#phone_number').focus()
+    }
+    else {
+      alert('주문이 완료되었습니다! 총 주문 금액은 ' + print_price(c_amount) + '원입니다.')
+      // let dumy ='<tr>\
+      // <th scope="row">'+num+'</th>\
+      // <td>'+c_name+'</td>\
+      // <td>'+c_amount+'</td>\
+      // <td>'+c_address+'</td>\
+      // <td>'+c_phone_number+'</td>\
+      // </tr>'
+      // $('#order_list').append(dumy)
+      // num = num+1
+
+      $.ajax({
+        type: "POST",
+        url: "/api/info",
+        data: { name_give: c_name, count_give: c_amount, address_give: c_address, phonenumber_give: c_phone_number},
+        success: function(response){
+          console.log(response)
+          window.location.reload()
+        }
+      })
+  
+      
+
+      //window.location.reload()함수 이용하려 했지만 cross origin requests 오류 발생 
+      // 따로 refresh 시킴
+      // $('#name').val('')
+      // $('#inlineFormCustomSelect').val('not_order')
+      // $('#address').val('')
+      // $('#phone_number').val('')
+      // window.location.reload();
+      // list_refresh()
+    }
+  }
+  // div 부분 refresh도 오류 발생
+  // function list_refresh(){  
+  //   $("#order_box").load(window.location.href + "#order_box");
+  // }
+
+  $(document).ready(function(){
+    listing();
+  });
+
+  function listing(){
+    $.ajax({
+      type: "GET",
+      url: "/api/listing",
+      data: {},
+      success: function(response){
+       let articles = response['orders'];
+       console.log(articles)
+       for (let i = 0; i < articles.length; i++) {
+        let ra = articles[i]['rank']
+        let ad = articles[i]['address']
+        let na = articles[i]['name']
+        let ph = articles[i]['phonenumber']
+        let co = articles[i]['count']
+        console.log(ph)
+        let dumy ='<tr>\
+        <th scope="row">'+ra+'</th>\
+        <td>'+na+'</td>\
+        <td>'+co+'</td>\
+        <td>'+ad+'</td>\
+        <td>'+ph+'</td>\
+        </tr>'
+        $('#order_list').append(dumy);
+      }
+    }
+  })
+  }
+
+</script>
+
+</head>
+
+<body>
+
+  <div class="myimage">
+    <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+      <div class="carousel-inner">
+        <div class="carousel-item active">
+          <img class="d-block w-100" src="https://img.kbs.co.kr/kbs/620/nsimg.kbs.co.kr/data/news/2019/11/20/4327665_Fe2.jpg" alt="First slide">
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="https://newsimg.sedaily.com/2019/12/04/1VRXYSKJF8_4.jpg" alt="Second slide">
+        </div>
+        <div class="carousel-item">
+          <img class="d-block w-100" src="http://1bang.kr/wp-content/uploads/2019/10/%E1%84%8B%E1%85%A6%E1%86%BA%E1%84%92%E1%85%A2%E1%86%B7.jpeg" alt="Third slide">
+        </div>
+      </div>
+      <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="sr-only">Previous</span>
+      </a>
+      <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="sr-only">Next</span>
+      </a>
+    </div>
+  </div>
+
+
+  <div class="body">
+    <div>
+      <div class="product">
+        <h2>
+          상품 제목 <span>가격: 1,000,000원 / 개</span> 
+        </h2>
+        <p></p>
+        <p> 역사 펭수는 2019년 《자이언트 펭TV》라는 타이틀로 시작된 펭귄 캐릭터이다. 처음에는 어린이를 대상으로 설정한 캐릭터로 한국의 한 초등학교에 전학을 온 에피소드가 방영되었다. 유튜브 채널이 함께 운영되었고 5월까지 구독자 수는 37명에 불과하였다. </p>
+        <p></p>
+      </div>
+
+
+      <h2>
+        주문하기
+      </h2>
+      <div id="order_box">
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">주문자 성함</span>
+          </div>
+          <input id="name" type="text" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">수량</span>
+          </div>
+
+          <select class="custom-select mr-sm-2 myclass" id="inlineFormCustomSelect" >
+            <option value="not_order" selected>수량을 선택해보세요</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="3">4</option>
+            <option value="3">5</option>
+          </select>
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">이메일</span>
+          </div>
+          <input id="address" type="text" class="form-control" placeholder="example@naver.com" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">전화번호</span>
+          </div>
+          <input id="phone_number" type="text" class="form-control" placeholder="010-0000-0000" aria-label="Username" aria-describedby="basic-addon1">
+        </div>
+      </div>
+
+      <div class="order_button">
+        <button onclick="order()" type="button" class="btn btn-warning">주문하기</button>
+      </div>
+
+      <table class="table table-borderless">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">name</th>
+            <th scope="col">count</th>
+            <th scope="col">address</th>
+            <th scope="col">phone number</th>
+          </tr>
+        </thead>
+        <tbody id="order_list">
+        </tbody>
+      </table>
+
+    </div>
+  </div>
+</body>
+</html>
+
